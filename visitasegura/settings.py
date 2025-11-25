@@ -1,7 +1,6 @@
 """
 Django settings for visitasegura project.
 """
-
 from pathlib import Path
 from os.path import join
 import environ
@@ -12,31 +11,26 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, False))
-
-# Hacer opcional la carga del .env (en Railway puedes usar solo variables de entorno)
-env_file = BASE_DIR / ".env"
-if env_file.exists():
-    environ.Env.read_env(env_file)
-
-# Dominio actual de Railway (puedes cambiarlo si Railway te asigna uno nuevo)
-RAILWAY_DOMAIN = "capstone-project-production-6b24.up.railway.app"
+environ.Env.read_env(BASE_DIR / ".env")
 
 # =========================
 # Seguridad / Debug
 # =========================
 SECRET_KEY = env("SECRET_KEY", default="!!!-dev-unsafe-key-change-me-!!!")
-DEBUG = env.bool("DEBUG", default=False)
+DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    RAILWAY_DOMAIN,
+    # cuando tengas el dominio/URL de Railway lo agregas aquí, por ejemplo:
+    # "mi-proyecto.up.railway.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    f"https://{RAILWAY_DOMAIN}",
+    # y aquí la versión https de Railway cuando la tengas, ej:
+    # "https://mi-proyecto.up.railway.app",
 ]
 
 # =========================
@@ -65,7 +59,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
 ]
-
 SITE_ID = 1
 
 # =========================
@@ -73,19 +66,15 @@ SITE_ID = 1
 # =========================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-
-    # WhiteNoise para servir archivos estáticos en producción
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
 
-    # debe ir antes que uses messages en tu middleware
+    # DEBE ir antes que uses messages en tu middleware
     "django.contrib.messages.middleware.MessageMiddleware",
 
-    # tu middleware de autorización
+    # Tu middleware de autorización (va DESPUÉS de MessageMiddleware)
     "accounts.middleware.RequireAuthorizedMiddleware",
 
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -104,10 +93,10 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django.template.context_processors.request",
+                "django.template.context_processors.request",  # requerido por allauth
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "accounts.context_processors.ui_flags",
+                "accounts.context_processors.ui_flags",        # banderas para la UI (botón Usuarios)
             ],
         },
     },
@@ -118,6 +107,8 @@ WSGI_APPLICATION = "visitasegura.wsgi.application"
 # =========================
 # Base de Datos (MySQL)
 # =========================
+# Intentamos leer primero las variables "DB_*" (las del .env local).
+# Si no existen, uso las que crea Railway automáticamente: MYSQL_DATABASE, MYSQLUSER y las demas
 DB_NAME = env("DB_NAME", default=env("MYSQL_DATABASE", default="visita_segura"))
 DB_USER = env("DB_USER", default=env("MYSQLUSER", default="root"))
 DB_PASSWORD = env("DB_PASSWORD", default=env("MYSQLPASSWORD", default=""))
@@ -158,24 +149,10 @@ USE_I18N = True
 USE_TZ = True
 
 # =========================
-# Archivos estáticos / media
+# Archivos estáticos 
 # =========================
-
-# IMPORTANTE: el slash inicial ES NECESARIO
-STATIC_URL = "/static/"
-
-# Carpeta con tus assets
+STATIC_URL = "static/"
 STATICFILES_DIRS = [join(BASE_DIR, "assets")]
-
-# carpeta para producción
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# Storage de WhiteNoise
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# permitir carga desde STATICFILES_DIRS sin collectstatic
-WHITENOISE_USE_FINDERS = True
-
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -206,9 +183,11 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
+# Permitimos autosignup, pero el adapter decide si permitir
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_QUERY_EMAIL = True
 
+# Adapters personalizados
 ACCOUNT_ADAPTER = "accounts.adapters.AccountAdapter"
 SOCIALACCOUNT_ADAPTER = "accounts.adapters.SocialAccountAdapter"
 
@@ -227,14 +206,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # =========================
-# Auto-provisión
+# Auto-provisión (si la usas)
 # =========================
 AUTO_PROVISION_OPERADOR = env.bool("AUTO_PROVISION_OPERADOR", default=True)
 OPERADOR_DEFAULT_ROL_ID = env.int("OPERADOR_DEFAULT_ROL_ID", default=1)
-
-# Para que Django sepa que está detrás de un proxy HTTPS (Railway)
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-# Para que allauth construya las URLs con https
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
-
