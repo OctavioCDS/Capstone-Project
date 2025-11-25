@@ -22,15 +22,13 @@ DEBUG = env.bool("DEBUG", default=True)
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    # cuando tengas el dominio/URL de Railway lo agregas aquí, por ejemplo:
-    # "mi-proyecto.up.railway.app",
+    "capstone-project-production-6b24.up.railway.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    # y aquí la versión https de Railway cuando la tengas, ej:
-    # "https://mi-proyecto.up.railway.app",
+    "https://capstone-project-production-6b24.up.railway.app",
 ]
 
 # =========================
