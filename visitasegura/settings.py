@@ -82,10 +82,10 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
 
-    # DEBE ir antes que uses messages en tu middleware
+    # debe ir antes que uses messages en tu middleware
     "django.contrib.messages.middleware.MessageMiddleware",
 
-    # Tu middleware de autorización (va DESPUÉS de MessageMiddleware)
+    # tu middleware de autorización
     "accounts.middleware.RequireAuthorizedMiddleware",
 
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -160,13 +160,21 @@ USE_TZ = True
 # =========================
 # Archivos estáticos / media
 # =========================
-STATIC_URL = "static/"
 
+# IMPORTANTE: el slash inicial ES NECESARIO
+STATIC_URL = "/static/"
+
+# Carpeta con tus assets
 STATICFILES_DIRS = [join(BASE_DIR, "assets")]
 
+# carpeta para producción
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# Storage de WhiteNoise
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# permitir carga desde STATICFILES_DIRS sin collectstatic
+WHITENOISE_USE_FINDERS = True
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
