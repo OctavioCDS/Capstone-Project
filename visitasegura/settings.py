@@ -11,7 +11,11 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env(BASE_DIR / ".env")
+
+# Cargar .env solo si existe (local). En Railway usas variables del panel.
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    environ.Env.read_env(env_file)
 
 # =========================
 # Seguridad / Debug
@@ -22,15 +26,13 @@ DEBUG = env.bool("DEBUG", default=True)
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    # cuando tengas el dominio/URL de Railway lo agregas aquí, por ejemplo:
-    # "mi-proyecto.up.railway.app",
+    "capstone-project-production-6b24.up.railway.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    # y aquí la versión https de Railway cuando la tengas, ej:
-    # "https://mi-proyecto.up.railway.app",
+    "https://capstone-project-production-6b24.up.railway.app",
 ]
 
 # =========================
@@ -66,6 +68,9 @@ SITE_ID = 1
 # =========================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Whitenoise para servir estáticos en producción
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -151,10 +156,22 @@ USE_TZ = True
 # =========================
 # Archivos estáticos 
 # =========================
-STATIC_URL = "static/"
+# URL pública
+STATIC_URL = "/static/"
+
+# Carpeta donde Django hará collectstatic (producción)
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Carpeta con tus assets del proyecto (css, js, img, styles)
 STATICFILES_DIRS = [join(BASE_DIR, "assets")]
+
+# Media (por si la usas)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Storage de Whitenoise solo en producción
+if not DEBUG:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
