@@ -231,3 +231,10 @@ SOCIALACCOUNT_PROVIDERS = {
 # =========================
 AUTO_PROVISION_OPERADOR = env.bool("AUTO_PROVISION_OPERADOR", default=True)
 OPERADOR_DEFAULT_ROL_ID = env.int("OPERADOR_DEFAULT_ROL_ID", default=1)
+
+# Para que Django sepa que está detrás de un proxy HTTPS (Railway)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Para que allauth construya las URLs con https
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+
