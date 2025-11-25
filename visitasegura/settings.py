@@ -1,6 +1,7 @@
 """
 Django settings for visitasegura project.
 """
+
 from pathlib import Path
 from os.path import join
 import environ
@@ -11,11 +12,7 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, False))
-
-# Cargar .env solo si existe (local). En Railway usas variables del panel.
-env_file = BASE_DIR / ".env"
-if env_file.exists():
-    environ.Env.read_env(env_file)
+environ.Env.read_env(BASE_DIR / ".env")
 
 # =========================
 # Seguridad / Debug
@@ -68,7 +65,8 @@ SITE_ID = 1
 # =========================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # Whitenoise para servir estáticos en producción
+
+    # WhiteNoise para servir estáticos en producción
     "whitenoise.middleware.WhiteNoiseMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -112,8 +110,6 @@ WSGI_APPLICATION = "visitasegura.wsgi.application"
 # =========================
 # Base de Datos (MySQL)
 # =========================
-# Intentamos leer primero las variables "DB_*" (las del .env local).
-# Si no existen, uso las que crea Railway automáticamente: MYSQL_DATABASE, MYSQLUSER y las demas
 DB_NAME = env("DB_NAME", default=env("MYSQL_DATABASE", default="visita_segura"))
 DB_USER = env("DB_USER", default=env("MYSQLUSER", default="root"))
 DB_PASSWORD = env("DB_PASSWORD", default=env("MYSQLPASSWORD", default=""))
@@ -154,26 +150,25 @@ USE_I18N = True
 USE_TZ = True
 
 # =========================
-# Archivos estáticos 
+# Archivos estáticos / media
 # =========================
-# URL pública
+# URL pública de los estáticos
 STATIC_URL = "/static/"
 
-# Carpeta donde Django hará collectstatic (producción)
+# Carpeta donde está tu carpeta "assets" con css/js/imágenes del proyecto
+STATICFILES_DIRS = [BASE_DIR / "assets"]
+
+# Carpeta de salida para collectstatic (producción / Railway)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Carpeta con tus assets del proyecto (css, js, img, styles)
-STATICFILES_DIRS = [join(BASE_DIR, "assets")]
-
-# Media (por si la usas)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# Storage de Whitenoise solo en producción
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Storage de estáticos solo en producción
 if not DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =========================
 # Auth / Redirects
@@ -200,11 +195,9 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-# Permitimos autosignup, pero el adapter decide si permitir
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_QUERY_EMAIL = True
 
-# Adapters personalizados
 ACCOUNT_ADAPTER = "accounts.adapters.AccountAdapter"
 SOCIALACCOUNT_ADAPTER = "accounts.adapters.SocialAccountAdapter"
 
@@ -223,7 +216,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # =========================
-# Auto-provisión (si la usas)
+# Auto-provisión
 # =========================
 AUTO_PROVISION_OPERADOR = env.bool("AUTO_PROVISION_OPERADOR", default=True)
 OPERADOR_DEFAULT_ROL_ID = env.int("OPERADOR_DEFAULT_ROL_ID", default=1)
