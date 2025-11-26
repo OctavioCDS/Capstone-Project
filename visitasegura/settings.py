@@ -220,4 +220,4 @@ SOCIALACCOUNT_PROVIDERS = {
 # =========================
 AUTO_PROVISION_OPERADOR = env.bool("AUTO_PROVISION_OPERADOR", default=True)
 OPERADOR_DEFAULT_ROL_ID = env.int("OPERADOR_DEFAULT_ROL_ID", default=1)
-#ahorasisssss
+#ahorasissssss
