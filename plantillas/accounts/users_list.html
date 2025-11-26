@@ -5,42 +5,23 @@
 {% block css %}
 <link rel="stylesheet" href="{% static 'styles/index.css' %}">
 <style>
-  /* Oculta la marca fija que queda al costado (varios nombres posibles) */
-  .brand-corner,
-  .marca-agua,
-  .marca,
-  .watermark,
-  .logo-corner {
+  /* Oculta marca de agua */
+  .brand-corner, .marca-agua, .marca, .watermark, .logo-corner {
     display: none !important;
   }
 
-  /* Header centrado arriba (igual que en index, por si se usa) */
-  .hero-title {
-    text-align: center;
-    padding-top: 8px;
-    padding-bottom: 6px;
-  }
-  .hero-title h2 {
-    margin: 0;
-  }
-  .hero-title .subtitulo {
-    margin: 0;
+  /* ==== FIX GLOBAL PARA MÓVIL (NAVBAR FIJO) ==== */
+  @media (max-width: 768px) {
+    body {
+      padding-top: 350px !important;  
+    }
   }
 
-  /* Contenedor principal de la vista de usuarios */
+  /* Contenedor principal */
   .users-wrap {
     width: min(1280px, 96vw);
-    /* espacio bajo el navbar y centrado horizontal */
-    margin: 80px auto 2.5rem auto;
+    margin: 40px auto 2.5rem auto;   
     padding-inline: 0.75rem;
-  }
-
-  /* Más espacio en móvil para que no se meta bajo el navbar */
-  @media (max-width: 767.98px) {
-    .users-wrap {
-      margin-top: 110px;   /* separa bien del navbar en celular */
-      padding-inline: 0.5rem;
-    }
   }
 
   .users-card {
@@ -48,15 +29,7 @@
   }
 
   .users-card .card-body {
-    padding-block: 1rem;
-    padding-inline: 1.25rem;
-  }
-
-  @media (min-width: 768px) {
-    .users-card .card-body {
-      padding-block: 1.25rem;
-      padding-inline: 2rem;
-    }
+    padding: 1rem 1.25rem;
   }
 
   .table td,
@@ -64,7 +37,40 @@
     vertical-align: middle;
   }
 
-  /* Para que la columna de acciones no se rompa raro en desktop */
+  /* --- Ajustes específicos para el celu --- */
+  @media (max-width: 768px) {
+
+    .users-wrap {
+      margin-top: 20px;              
+      padding-inline: 0.5rem;
+    }
+
+    .users-card .card-body {
+      padding: 0.75rem !important;
+    }
+
+    /* Buscador + botón apilados */
+    .users-top-controls {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px !important;
+    }
+
+    /* Botón “Nuevo usuario” full width */
+    .btn-add-user {
+      width: 100% !important;
+      text-align: center !important;
+    }
+  }
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    .users-card .card-body {
+      padding: 1.25rem 2rem;
+    }
+  }
+
+  /* Evita que acciones rompan la tabla en desktop grande */
   @media (min-width: 992px) {
     .users-actions {
       white-space: nowrap;
@@ -80,7 +86,7 @@
     <div class="card-body">
 
       <!-- Buscador + botón nuevo usuario -->
-      <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between gap-2 mb-3">
+      <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between gap-2 mb-3 users-top-controls">
         <form method="get" class="d-flex align-items-center gap-2 w-100 w-md-auto">
           <input
             class="form-control"
@@ -91,20 +97,20 @@
             placeholder="Buscar por email">
           <button class="btn btn-primary" type="submit">Buscar</button>
         </form>
-        <a class="btn btn-success" href="{% url 'accounts_users_create' %}">+ Nuevo usuario</a>
+        <a class="btn btn-success btn-add-user" href="{% url 'accounts_users_create' %}">+ Nuevo usuario</a>
       </div>
 
       <!-- Tabla de usuarios -->
       <div class="table-responsive">
         <table class="table table-sm table-striped align-middle mb-3">
           <thead>
-          <tr>
-            <th>Email</th>
-            <th>Nombre</th>
-            <th>Rol</th>
-            <th>Autorizado</th>
-            <th class="users-actions">Acciones</th>
-          </tr>
+            <tr>
+              <th>Email</th>
+              <th>Nombre</th>
+              <th>Rol</th>
+              <th>Autorizado</th>
+              <th class="users-actions">Acciones</th>
+            </tr>
           </thead>
           <tbody>
           {% for r in page_obj.object_list %}

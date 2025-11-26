@@ -4,36 +4,109 @@
 {% block css %}
 <link rel="stylesheet" href="{% static 'styles/index.css' %}">
 <style>
-  #btnScan { font-size: 1.25rem; padding: .9rem 1.25rem; }
-  @media (min-width: 768px) { #btnScan { min-width: 280px; } }
-  #snapshotCanvas { display:none; }
-  #snapshotThumb { max-width: 100%; border-radius: .5rem; display:none; }
+  /* ==== LAYOUT GENERAL ESCÁNER ==== */
+  .scanner-wrap {
+    width: min(1280px, 96vw);
+    margin: 90px auto 2.5rem auto;   /* margen superior base (desktop) */
+    padding-inline: 0.75rem;
+  }
+
+  .scanner-card .card-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* Botón principal de escaneo */
+  #btnScan {
+    font-size: 1.25rem;
+    padding: .9rem 1.25rem;
+  }
+
+  /* Video / snapshot */
+  #snapshotCanvas {
+    display: none;
+  }
+  #snapshotThumb {
+    max-width: 100%;
+    border-radius: .5rem;
+    display: none;
+  }
+
+  /* ====== MÓVIL ====== */
+  @media (max-width: 768px) {
+    .scanner-wrap {
+      margin-top: 250px;        /* 🔥 separa bien del navbar fijo */
+      padding-inline: 0.5rem;
+    }
+
+    .scanner-card .card-body {
+      padding: 1rem;
+    }
+
+    /* Título y botón atrás se apilan mejor */
+    .scanner-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: .5rem;
+      text-align: center;
+    }
+
+    .scanner-header h3 {
+      font-size: 1.1rem;
+    }
+
+    .scanner-header .btn-back {
+      align-self: flex-start;
+    }
+
+    /* Botones en columna y ocupando todo el ancho */
+    .scanner-actions button,
+    .scanner-actions a {
+      width: 100%;
+    }
+  }
+
+  /* Desktop: un poco más de padding */
+  @media (min-width: 768px) {
+    .scanner-card .card-body {
+      padding: 1.5rem 2rem;
+    }
+
+    #btnScan {
+      min-width: 280px;
+    }
+  }
 </style>
 {% endblock %}
 
 {% block contenido %}
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-  <!-- Ir a la vista principal (home) -->
-    <a href="/" class="btn btn-outline-secondary">← Atrás</a>
+<div class="scanner-wrap">
+  <!-- Header: botón atrás + título centrado -->
+  <div class="d-flex justify-content-between align-items-center mb-3 scanner-header">
+    <!-- Ir a la vista principal (home) -->
+    <a href="/" class="btn btn-outline-secondary btn-back">← Atrás</a>
 
-    <h3 class="mb-0 text-center">Escaneo de QR / Cédula</h3>
+    <h3 class="mb-0 text-center flex-grow-1">Escaneo de QR / Cédula</h3>
 
-  <!-- espacio para balancear el flex -->
+    <!-- espacio para balancear el flex en desktop -->
     <div style="width: 220px;"></div>
   </div>
 
-  <div class="card shadow-sm">
+  <div class="card shadow-sm scanner-card">
     <div class="card-body">
       <div class="row g-3 align-items-start">
+        <!-- LADO IZQUIERDO: VIDEO -->
         <div class="col-12 col-lg-7 d-flex flex-column align-items-center">
           <div class="w-100" style="max-width:720px;">
-            <video id="preview" class="border rounded w-100" style="min-height: 380px; background:#000;" playsinline></video>
+            <video id="preview"
+                   class="border rounded w-100"
+                   style="min-height: 380px; background:#000;"
+                   playsinline></video>
           </div>
           <canvas id="snapshotCanvas" width="1280" height="720"></canvas>
           <img id="snapshotThumb" alt="Vista previa">
         </div>
 
+        <!-- LADO DERECHO: CONTROLES -->
         <div class="col-12 col-lg-5">
           <div class="mb-2">
             <label class="form-label">Cámara</label>
@@ -42,19 +115,25 @@
             </select>
           </div>
 
-          <div class="d-grid gap-2 mb-2">
+          <div class="d-grid gap-2 mb-2 scanner-actions">
             <button id="btnScan" class="btn btn-primary btn-lg">Escanear</button>
             <button id="btnSnapshot" class="btn btn-outline-primary">Tomar foto (OCR)</button>
             <button id="btnStop" class="btn btn-outline-secondary">Detener</button>
-            
           </div>
 
-          <div id="result" class="alert alert-secondary mb-0" role="alert" style="min-height: 44px;">
+          <div id="result"
+               class="alert alert-secondary mb-0"
+               role="alert"
+               style="min-height: 44px;">
             Cámara lista. Apunta al QR/Carnet.
           </div>
-          <hr>
-          <a href="{% url 'visitas_list' %}" class="btn btn-outline-dark w-100 mt-2">📋 Ir al listado</a>
 
+          <hr>
+
+          <a href="{% url 'visitas_list' %}"
+             class="btn btn-outline-dark w-100 mt-2">
+            📋 Ir al listado
+          </a>
         </div>
       </div>
     </div>
