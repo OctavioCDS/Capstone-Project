@@ -150,6 +150,16 @@ USE_I18N = True
 USE_TZ = True
 
 # =========================
+# Seguridad extra para proxy (Railway)
+# =========================
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+
+
+
+
+# =========================
 # Archivos estáticos / media
 # =========================
 # URL pública de los estáticos
