@@ -12,7 +12,11 @@
   <div class="topbar">
     <div class="container-limit pt-3 pb-2 no-x">
       <div class="d-flex justify-content-between align-items-center gap-2">
-        <a href="{% url 'scan' %}" class="btn btn-outline-secondary">← Atrás</a>
+        <button type="button"
+            class="btn btn-outline-secondary"
+            onclick="window.history.back()">
+            ← Atrás
+        </button>
         <h3 class="mb-0 text-center flex-grow-1">Listado de Visitas</h3>
         <div style="width:140px"></div>
       </div>

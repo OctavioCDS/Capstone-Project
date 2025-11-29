@@ -17,22 +17,32 @@ from accounts.utils import db_role_required
 from .models import Visita
 
 # ---------- Utilidades RUT ----------
-RUT_RE = re.compile(r'([0-9]{6,9}-?[0-9kK])')
+# Cuerpo 7 u 8 dígitos + dígito verificador (con o sin guión, con o sin puntos)
+RUT_RE = re.compile(r'([0-9]{7,8}-?[0-9kK])')
 
 
 def normalize_rut(raw: str) -> str:
+    """
+    Deja el RUT en formato 12345678-9 o 1234567-K (sin puntos).
+    """
     if not raw:
         return ""
-    only = re.sub(r'[^0-9kK]', '', str(raw)).upper()
+    only = re.sub(r'[^0-9kK]', '', str(raw)).upper()  # deja solo números y K
     if len(only) < 2:
         return only
     return f"{only[:-1]}-{only[-1]}"
 
 
 def rut_from_text_or_url(text: str) -> str:
+    """
+    Intenta obtener un RUT desde:
+    - una URL con parámetro RUN / run / Rut / rut
+    - un texto normal que contenga un RUT
+    """
     if not text:
         return ""
     s = str(text).strip()
+
     # 1) Si viene URL (o string con ?), intenta leer parámetro RUN/run
     try:
         parsed = urlparse(s if s.startswith("http") else "http://dummy" + s)
@@ -42,12 +52,50 @@ def rut_from_text_or_url(text: str) -> str:
                 return normalize_rut(qs[key][0])
     except Exception:
         pass
+
     # 2) Si viene “texto común”, extrae por regex
     m = RUT_RE.search(s)
     if m:
         return normalize_rut(m.group(1))
+
     # 3) Último intento: normalizar el string completo
     return normalize_rut(s)
+
+
+def is_valid_rut(raw: str) -> bool:
+    """
+    Valida un RUT chileno usando algoritmo módulo 11.
+    Acepta formatos con o sin puntos/guión y dv numérico o 'K'.
+    """
+    rut = normalize_rut(raw)
+    if not rut or "-" not in rut:
+        return False
+
+    cuerpo, dv = rut.split("-", 1)
+    if not cuerpo.isdigit():
+        return False
+
+    dv = dv.upper()
+    suma = 0
+    factor = 2
+
+    for d in reversed(cuerpo):
+        suma += int(d) * factor
+        factor += 1
+        if factor > 7:
+            factor = 2
+
+    resto = suma % 11
+    verificador_num = 11 - resto
+
+    if verificador_num == 11:
+        dv_calc = "0"
+    elif verificador_num == 10:
+        dv_calc = "K"
+    else:
+        dv_calc = str(verificador_num)
+
+    return dv == dv_calc
 
 
 # ---------- Operador (autoprovisión si no existe) ----------
@@ -124,7 +172,9 @@ def scan_api(request):
     dry_run = bool(payload.get("dry_run", False))
 
     rut = rut_from_text_or_url(rut_raw)
-    if not rut:
+
+    # VALIDACIÓN RUT (escáner)
+    if not rut or not is_valid_rut(rut):
         return JsonResponse(
             {"ok": False, "message": "RUT no válido."}, status=400
         )
@@ -326,14 +376,18 @@ def manual_api(request):
         )
 
     nombre = (payload.get("nombre") or "").strip()
-    rut = rut_from_text_or_url(payload.get("rut") or "")
+    rut_raw = payload.get("rut") or ""
     destino_id = payload.get("destino_id")
     hora_str = (payload.get("hora") or "").strip()
 
-    if not rut:
+    rut = rut_from_text_or_url(rut_raw)
+
+    # VALIDACIÓN RUT (ingreso manual)
+    if not rut or not is_valid_rut(rut):
         return JsonResponse(
             {"ok": False, "message": "RUT no válido."}, status=400
         )
+
     if not destino_id:
         return JsonResponse(
             {"ok": False, "message": "Debe seleccionar la ubicación."},

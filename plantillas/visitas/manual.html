@@ -9,6 +9,16 @@
 
 {% block contenido %}
 <div class="container">
+
+  <!-- Botón Atrás (vuelve a la vista anterior) -->
+  <div class="d-flex justify-content-start mt-3 mb-3">
+    <button type="button"
+            class="btn btn-outline-secondary"
+            onclick="window.history.back()">
+      ← Atrás
+    </button>
+  </div>
+
   <div class="card shadow-sm manual-card">
     <div class="card-body">
       <h5 class="card-title text-center mb-3">Ingreso Manual</h5>
@@ -17,13 +27,15 @@
         {% csrf_token %}
         <div class="mb-3">
           <label class="form-label">Nombre</label>
-          <input type="text" id="inpNombre" class="form-control manual-input" placeholder="Escribir nombre" required>
+          <input type="text" id="inpNombre" class="form-control manual-input"
+                 placeholder="Escribir nombre" required>
           <div class="invalid-feedback">Ingresa el nombre.</div>
         </div>
 
         <div class="mb-3">
           <label class="form-label">RUT</label>
-          <input type="text" id="inpRut" class="form-control manual-input" placeholder="Escribir RUT" required>
+          <input type="text" id="inpRut" class="form-control manual-input"
+                 placeholder="Ej: 12345678-9" required>
           <div class="invalid-feedback">Ingresa un RUT válido.</div>
         </div>
 
@@ -40,7 +52,8 @@
 
         <div class="mb-4">
           <label class="form-label">Hora (opcional)</label>
-          <input type="time" id="inpHora" class="form-control manual-input" placeholder="--:--">
+          <input type="time" id="inpHora" class="form-control manual-input"
+                 placeholder="--:--">
           <div class="form-text">Si lo dejas vacío, se usará la hora actual.</div>
         </div>
 
@@ -72,5 +85,5 @@
 
 {% block js %}
 {# cache-busting para asegurar que carga la versión nueva #}
-<script src="{% static 'js/manual.js' %}?v=3"></script>
+<script src="{% static 'js/manual.js' %}?v=5"></script>
 {% endblock js %}

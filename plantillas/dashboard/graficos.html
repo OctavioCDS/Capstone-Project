@@ -6,15 +6,94 @@
 {% block css %}
 <link rel="stylesheet" href="{% static 'styles/graficos.css' %}">
 <style>
-  /* Solo estilos pequeños específicos de esta página */
+  /* ==== LAYOUT DE LOS GRÁFICOS (3 x 2 EN DESKTOP) ==== */
+
+  /* contenedor de todas las tarjetas */
+  .chart-grid {
+    display: flex;          /* Usamos flexbox en vez de grid */
+    flex-wrap: wrap;        /* Permite saltar a la segunda fila */
+    gap: 18px;
+  }
+
+  /* tarjeta de cada gráfico */
   .chart-card {
     position: relative;
+    background: #fff;
+    border: 1px solid #e6e8ef;
+    border-radius: 12px;
+    padding: 12px;
+    height: 260px;
+    box-sizing: border-box;
+
+    /* 3 columnas en escritorio */
+    flex: 0 0 calc(33.333% - 12px);
+    max-width: calc(33.333% - 12px);
+  }
+
+  .chart-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #222;
+    margin: 4px 0 10px;
+  }
+
+  .chart-card canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Botón CSV en cada tarjeta */
+  .chart-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 0;
+    cursor: pointer;
+    background: #10b981;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* ----- RESPONSIVE ----- */
+
+  /* Entre 900 y 1200px → 2 columnas */
+  @media (max-width: 1200px) {
+    .chart-card {
+      flex: 0 0 calc(50% - 12px);
+      max-width: calc(50% - 12px);
+    }
+  }
+
+  /* Menos de 900px → 1 columna */
+  @media (max-width: 900px) {
+    .chart-card {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
   }
 </style>
 {% endblock css %}
 
 {% block contenido %}
 <div class="dash-wrap">
+
+  {# Botones de navegación: Atrás e Ir a Home #}
+  <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+    <button type="button"
+            class="btn btn-outline-secondary"
+            onclick="window.history.back()">
+      ← Atrás
+    </button>
+
+    <a href="/"
+       class="btn btn-outline-secondary">
+      🏠 Home
+    </a>
+  </div>
+
   {# --- Exportación global: solo Administrador / Jefe de seguridad --- #}
   {% if ui_is_admin %}
   <form action="{% url 'dashboard_export_csv' %}" method="get" class="export-filters">

@@ -2,20 +2,20 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-
-  /* Fondo con tu imagen */
   background: url("../img/visitasegura.png") no-repeat center center fixed;
   background-size: cover;
-
-  /* IMPORTANTE: NO centrar con flex, para que no crezca infinito */
-  /* Sin height:100vh, sin display:flex, sin align-items/justify-content */
 }
 
 /* ====== CONTENEDOR DEL DASHBOARD ====== */
 .dash-wrap {
-  max-width: 1100px;
-  margin: 72px auto 40px;  /* deja espacio bajo el navbar */
+  max-width: 1300px;       /* ancho suficiente para 3 columnas */
+  margin: 32px auto 40px;  /* 🔽 antes era 72px, ahora más arriba */
   padding: 0 16px 40px;
+}
+
+/* Ajuste suave al primer bloque (Atrás / Home) para que no sume tanto margen */
+.dash-wrap > .d-flex.mt-3 {
+  margin-top: 0.5rem !important;  /* antes 1rem */
 }
 
 /* ====== KPIs ====== */
@@ -47,20 +47,24 @@ body {
   line-height: 1;
 }
 
-/* ====== TARJETAS CON GRÁFICOS ====== */
+/* ====== TARJETAS CON GRÁFICOS (3 x 2 EN ESCRITORIO) ====== */
 .chart-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;      /* permite que pasen a la segunda fila */
   gap: 18px;
 }
 
+/* 3 tarjetas por fila en desktop */
 .chart-card {
   background: #fff;
   border: 1px solid #e6e8ef;
   border-radius: 12px;
   padding: 12px;
-  height: 300px;          /* fija: evita que crezca infinito */
+  height: 260px;
   box-sizing: border-box;
+
+  flex: 0 0 calc(33.333% - 12px);
+  max-width: calc(33.333% - 12px);
 }
 
 .chart-title {
@@ -70,7 +74,6 @@ body {
   margin: 4px 0 10px;
 }
 
-/* Hacemos que el canvas use todo el ancho disponible */
 .chart-card canvas {
   width: 100% !important;
   height: 100% !important;
@@ -125,22 +128,30 @@ body {
 }
 
 /* ====== RESPONSIVE ====== */
+
+/* Entre 900 y 1200 px → 2 columnas de gráficos */
+@media (max-width: 1200px) {
+  .chart-card {
+    flex: 0 0 calc(50% - 12px);
+    max-width: calc(50% - 12px);
+  }
+}
+
+/* Menos de 900px → 1 columna de gráficos y KPIs verticales */
 @media (max-width: 900px) {
   .dash-wrap {
-    margin-top: 88px;          /* un pelín más de aire bajo el navbar en móvil */
+    margin-top: 48px;            /* 🔽 antes 88px */
     padding: 0 12px 32px;
   }
 
   .kpis {
-    grid-template-columns: 1fr;  /* KPIs uno bajo otro */
-  }
-
-  .chart-grid {
-    grid-template-columns: 1fr;  /* gráficos en 1 columna */
+    grid-template-columns: 1fr;
   }
 
   .chart-card {
-    height: 260px;               /* un poco más compactos en móvil */
+    flex: 0 0 100%;
+    max-width: 100%;
+    height: 260px;
   }
 
   .export-filters {

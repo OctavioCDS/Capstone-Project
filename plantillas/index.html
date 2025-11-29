@@ -1,66 +1,100 @@
 {% extends 'base/padre.html' %}
 {% load static %}
-{% load role_tags %} {# <-- NUEVO #}
+{% load role_tags %}
 
-{% block titulo %}
-VisitaSegura
-{% endblock %}
+{% block titulo %}VisitaSegura{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'styles/index.css' %}"> 
+<link rel="stylesheet" href="{% static 'styles/index.css' %}">
 {% endblock css %}
 
 {% block contenido %}
-  <div class="text-center py-5">
+<div class="home-wrap container-xxl no-bg">
+  <div class="row align-items-center">
 
-    <!-- Título -->
-    <h1 class="mb-1">Visita Segura</h1>
-    <h3 class="subtitulo">Duoc <span class="fw-bold" style="color:#fcb900">UC</span></h3>
+    <!-- IZQUIERDA -->
+    <div class="col-lg-6 mb-4 mb-lg-0 d-flex justify-content-center align-items-center">
+      <div class="home-card">
 
-    <!-- Menú con Bootstrap (2 columnas en md, 1 en móviles) -->
-    <div class="row g-3 justify-content-center mt-3" style="max-width:720px;margin:0 auto;">
-      <div class="col-12 col-md-6 d-grid">
-        <a href="{% url 'scan' %}" class="btn btn-primary btn-lg rounded-pill">Escanear</a>
-      </div>
-      <div class="col-12 col-md-6 d-grid">
-        <a href="{% url 'visitas_manual' %}" class="btn btn-primary btn-lg rounded-pill">Ingreso Manual</a>
-      </div>
-      <div class="col-12 col-md-6 d-grid">
-        <a href="{% url 'dashboard_home' %}" class="btn btn-primary btn-lg rounded-pill">Gráficos</a>
-      </div>
-      <div class="col-12 col-md-6 d-grid">
-        <a href="{% url 'visitas_list' %}" class="btn btn-primary btn-lg rounded-pill">Listado de Visitas</a>
-      </div>
+        <h1 class="mb-1">Visita Segura</h1>
+        <h3 class="subtitulo">
+          Duoc <span class="fw-bold">UC</span>
+        </h3>
 
-        {% if user|has_group:"Administrador" or user|has_group:"Jefe de seguridad" %}
+        <div class="row g-3 justify-content-center mt-3 home-menu">
           <div class="col-12 col-md-6 d-grid">
-              <a href="{% url 'accounts_users_list' %}" class="btn btn-outline-secondary btn-lg rounded-pill">
-                Usuarios
-              </a>
+            <a href="{% url 'scan' %}" class="btn btn-primary btn-lg rounded-pill">
+              Escanear
+            </a>
           </div>
-        {% endif %}
+          <div class="col-12 col-md-6 d-grid">
+            <a href="{% url 'visitas_manual' %}" class="btn btn-primary btn-lg rounded-pill">
+              Ingreso Manual
+            </a>
+          </div>
+          <div class="col-12 col-md-6 d-grid">
+            <a href="{% url 'dashboard_home' %}" class="btn btn-primary btn-lg rounded-pill">
+              Gráficos
+            </a>
+          </div>
+          <div class="col-12 col-md-6 d-grid">
+            <a href="{% url 'visitas_list' %}" class="btn btn-primary btn-lg rounded-pill">
+              Listado de Visitas
+            </a>
+          </div>
+
+          {% if user|has_group:"Administrador" or user|has_group:"Jefe de seguridad" %}
+          <div class="col-12 d-grid">
+            <a href="{% url 'accounts_users_list' %}"
+               class="btn btn-outline-secondary btn-lg rounded-pill">
+              Usuarios
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <hr>
+
+        <div class="d-flex align-items-center justify-content-between gap-3 home-user-row mx-auto">
+          {% if user.is_authenticated %}
+            <div class="d-flex align-items-center gap-2">
+              <span class="fw-medium">
+                {% if user.first_name or user.last_name %}
+                  {{ user.first_name }} {{ user.last_name }}
+                {% else %}
+                  {{ user.username }}
+                {% endif %}
+              </span>
+            </div>
+            <a class="btn btn-outline-primary btn-sm rounded-pill"
+               href="{% url 'logout_confirm' %}">
+              Cerrar sesión
+            </a>
+          {% else %}
+            <a class="btn btn-primary btn-sm rounded-pill ms-auto"
+               href="{% url 'login' %}">
+              Iniciar sesión
+            </a>
+          {% endif %}
+        </div>
+
+      </div>
     </div>
 
-    <!-- Separador -->
-    <hr>
+    <!-- DERECHA -->
+    <div class="col-lg-6 d-none d-md-flex justify-content-center align-items-center">
+      <div class="home-hero-images">
 
-    <!-- Usuario (solo utilidades Bootstrap) -->
-    <div class="d-flex align-items-center justify-content-between gap-3 mx-auto px-2" style="max-width:720px;">
-      {% if user.is_authenticated %}
-        <div class="d-flex align-items-center gap-2">
-          <span class="fw-medium">
-            {% if user.first_name or user.last_name %}
-              {{ user.first_name }} {{ user.last_name }}
-            {% else %}
-              {{ user.username }}
-            {% endif %}
-          </span>
-        </div>
-        <a class="btn btn-outline-primary btn-sm rounded-pill" href="{% url 'logout_confirm' %}">Cerrar sesión</a>
-      {% else %}
-        <a class="btn btn-primary btn-sm rounded-pill ms-auto" href="{% url 'login' %}">Iniciar sesión</a>
-      {% endif %}
+        <img src="{% static 'img/entradaD1.jpeg' %}" class="home-hero-img hero-1">
+        <img src="{% static 'img/entradaD2.jpeg' %}" class="home-hero-img hero-2">
+        <img src="{% static 'img/entradaD3.jpeg' %}" class="home-hero-img hero-3">
+
+      </div>
     </div>
 
   </div>
+</div>
 {% endblock contenido %}
+
+{% block js %}
+{% endblock js %}

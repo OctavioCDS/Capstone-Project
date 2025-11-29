@@ -14,21 +14,34 @@ body {
   align-items: center;     /* Centro vertical */
 }
 
- /* separa el contenido del navbar fijo */
-  .page { min-height: 100vh; display: flex; align-items: start; }
-  .manual-card { max-width: 520px; margin: 56px auto 32px; } /* 56px para despegar del navbar */
-  .manual-card .form-label { font-weight: 600; }
-  .manual-input {
-    background: #ffb40022;
-    border: 1px solid #ffb40077;
-    border-radius: 999px;
-    padding-left: 16px;
-  }
-  .manual-input:focus {
-    box-shadow: 0 0 0 .2rem rgba(255,180,0,.25);
-    border-color: #ffb400;
-  }
-  .manual-btn {
-    border-radius: 999px;
-    font-weight: 600;
-  }
+/* separa el contenido del navbar fijo */
+.page { min-height: 100vh; display: flex; align-items: start; }
+.manual-card { max-width: 520px; margin: 56px auto 32px; } /* 56px para despegar del navbar */
+.manual-card .form-label { font-weight: 600; }
+.manual-input {
+  background: #ffb40022;
+  border: 1px solid #ffb40077;
+  border-radius: 999px;
+  padding-left: 16px;
+}
+.manual-input:focus {
+  box-shadow: 0 0 0 .2rem rgba(255,180,0,.25);
+  border-color: #ffb400;
+}
+.manual-btn {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+/* ---- Reglas específicas para el campo RUT ---- */
+/* Quitar el ícono verde de validación para el RUT */
+#manualForm #inpRut.form-control.is-valid,
+#manualForm #inpRut.form-control:valid {
+  background-image: none !important;
+}
+
+/* Asegurar borde rojo cuando sea inválido */
+#manualForm #inpRut.form-control.is-invalid,
+#manualForm.was-validated #inpRut.form-control:invalid {
+  border-color: #dc3545 !important;
+}
